@@ -1,0 +1,27 @@
+apiVersion: run.tanzu.vmware.com/v1alpha1
+kind: TanzuKubernetesCluster
+metadata:
+  name: tkc-1
+spec:
+  distribution:
+    version: v1.17.8+vmware.1-tkg.1.5417466
+  settings:
+    network:
+      cni:
+        name: antrea
+      pods:
+        cidrBlocks:
+        - 193.0.2.0/16
+      serviceDomain: managedcluster.local
+      services:
+        cidrBlocks:
+        - 195.51.100.0/12
+  topology:
+    controlPlane:
+      class: guaranteed-small
+      count: 1
+      storageClass: vsan-default-storage-policy
+    workers:
+      class: guaranteed-small
+      count: 1
+      storageClass: vsan-default-storage-policy
