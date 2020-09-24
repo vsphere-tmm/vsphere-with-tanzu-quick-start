@@ -212,8 +212,6 @@ metadata:
 ...
 ```
 
-*Add some verbiage around what the command is doing in relation to above*
-
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/mylesagray/vsphere-with-tanzu-quick-start/master/manifests/pod.yaml
 ```
@@ -228,9 +226,9 @@ vsphere-with-tanzu-pod   1/1     Running   0          2m52s
 
 #### Accessing the Pod
 
-If we access the pod now (below), we should get an `Error: 403` as we haven't added any content to the NginX web server yet:
+If we access the pod now (below), we should get an `Error: 403` as we haven't added any content to the NginX web server yet.
 
-**Explain prot-forward magix here**
+The below command creates a tunnel, from your local machine on port `8080` to the pod inside the kubernetes cluster on port `80`, so when you access `localhost:8080` it gets tunnelled directly to the pod on port `80`.
 
 ```sh
 kubectl port-forward vsphere-with-tanzu-pod 8080:80
@@ -264,4 +262,8 @@ Open [http://localhost:8080](http://localhost:8080) in your web browser and you 
 
 ![Success HTML Page](./img/success.png)
 
-**Note that the PVC is now attached to the Pod and the data is stored in it.**
+### Use the built in Load Balancer in vSphere with Tanzu
+
+Rather than connecting over the tunnel, as we have been up to now - you can use something called a Kubernetes `Service`, this allows the Pod to be accessible to either other Pods in the cluster in the case of the service type `ClusterIP`, or to the outside world, in the case of the service types `HostPort` and `LoadBalancer`.
+
+For ease of demonstration (and frankly, what most people use in production) is a `Service` with `Type: LoadBalancer`. In vSphere with Tanzu, this will automatically allocate the service an IP from the Virtual IP range that was set when creating your vSphere with Tanzu deployment. It will use HAProxy to automatically route traffic from the IP address allocated, to the destination Pod, or group of Pods.
