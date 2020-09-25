@@ -264,6 +264,22 @@ Open [http://localhost:8080](http://localhost:8080) in your web browser and you 
 
 ### Use the built in Load Balancer in vSphere with Tanzu
 
-Rather than connecting over the tunnel, as we have been up to now - you can use something called a Kubernetes `Service`, this allows the Pod to be accessible to either other Pods in the cluster in the case of the service type `ClusterIP`, or to the outside world, in the case of the service types `HostPort` and `LoadBalancer`.
+Rather than connecting over the tunnel, as we have been up to now - you can use something called a Kubernetes `Service`, this allows the Pod to be accessible to either other Pods in the cluster in the case of the service type `ClusterIP`, or to the outside world, in the case of the service types `NodePort` and `LoadBalancer`.
 
-For ease of demonstration (and frankly, what most people use in production) is a `Service` with `Type: LoadBalancer`. In vSphere with Tanzu, this will automatically allocate the service an IP from the Virtual IP range that was set when creating your vSphere with Tanzu deployment. It will use HAProxy to automatically route traffic from the IP address allocated, to the destination Pod, or group of Pods.
+For ease of demonstration (and frankly, what most people use in production) is a [`Service` with `Type: LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types). In vSphere with Tanzu, this will automatically allocate the service an IP from the Virtual IP range that was set when creating your vSphere with Tanzu deployment. It will use HAProxy to automatically route traffic from the IP address allocated, to the K8s cluster.
+
+In the case of our service [svc.yaml](./manifests/svc.yaml) - it will expose port `80` on whatever load-balanced IP it is assigned by vSphere with Tanzu to port `80` on the container(s). Additionally, Kubernetes uses a `selector` of `app: nginx` to figure out what backend Pods it should load balance across, this same label can be seen in [pod.yaml](./manifests/pod.yaml) in the `metadata` section and is what creates the mapping from the `Service` to the `Pod`.
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/mylesagray/vsphere-with-tanzu-quick-start/master/manifests/svc.yaml
+```
+
+The `Service` will spin up on the cluster, claim an IP and make it accessible to you. You can find out what IP it has been assigned by issuing the following command:
+
+```sh
+$ kubectl get services
+NAME                TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)      AGE
+nginx-service       LoadBalancer   10.103.49.246   192.168.1.51   80:80/TCP    1h
+```
+
+Whatever is listed in the above `EXTERNAL-IP` column, you can then navigate to in your browser and receive the same web page as before - but this time over your corporate network, and it's fully fronted and load balanced by vSphere with Tanzu!
