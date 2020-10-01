@@ -4,6 +4,16 @@
 
 Kubernetes and containers are developer technologies, as such almost all of the tooling assumes either Linux or macos as an operating system, that includes things like exporting environment variables and other shell commands - this guide is written to follow those guidelines and it is recommended you use a Linux VM or otherwise to ease troubleshooting. If you are running Windows you will need to adjust the commands to their Windows equivalents.
 
+### Download the tools
+
+To interact with vSphere with Tanzu you will need to download `kubectl` and the associated vSphere CLI plugin for `kubectl`, both of these are available at the Namespace level in vCenter.
+
+Navigate to the Namespace and look in the `Status` column for "`Link to CLI Tools`", Click `Open` and follow the instructions on the web page you are taken to to install the `kubectl` CLI and associated plugin.
+
+![Namespace with Link to CLI Tools](./img/namespace.png)
+
+### Log in using `kubectl`
+
 To interact with our new vSphere with Tanzu supervisor cluster and begin provisioning resources we need to login first. Below we export the environment variables `SC_IP` (Supervisor Cluster IP) and `NAMESPACE` (your vSphere with Tanzu namespace name) with the information specific to our environment. You will be prompted to put in your password after running this command. It is important to ensure the user has been given RBAC permissions (`Namespaces -> Namespace -> Permissions -> Add`) on the vSphere with Tanzu namespace for you to be allowed to log in.
 
 ```sh
@@ -16,13 +26,23 @@ kubectl vsphere login --server=https://$SC_IP --vsphere-username administrator@v
 
 After successfully logging in, we now need to tell the Kubernetes command line that it should use the newly downloaded context (you can think of a context as a keychain to access a specific K8s cluster). Setting the context tells `kubectl` that any commands we issue through it from that point on will be sent to that specific K8s cluster.
 
-As you can see from the below, all vSphere with Tanzu contexts are named in the pattern `Namespace-Supervisor Cluster IP` so a direct copy and paste will work as long as you've exported the environment variables in the last step.
+As you can see from the below, vSphere with Tanzu contexts are named after the Namespace created in vCenter, so a direct copy and paste will work as long as you've exported the environment variables in the last step.
+
+```sh
+kubectl config use-context $NAMESPACE
+```
+
+#### Troubleshooting
+
+If the above command doesn't connect you to the correct context, that may be because you already have a context in your `~/.kube/config` file with the same name as the Namespace.
+
+In this case, vSphere with Tanzu will have created a context in the `Namespace-Supervisor Cluster IP` pattern. As such, the below command should connect you to the correct context:
 
 ```sh
 kubectl config use-context $NAMESPACE-$SC_IP
 ```
 
-## Deploy TKG Service cluster if you haven't already
+## Deploy TKG Service cluster
 
 Next up, we need a Kubernetes cluster to deploy some workloads to - when you deploy vSphere with Tanzu it gains you a control plane that acts like Kubernetes to allow you to request and create resources in a K8s-like fashion. E.g. you ask the Supervisor cluster for a Kubernetes cluster and it will build one for you using TKG Service.
 
@@ -34,7 +54,9 @@ kubectl apply -f https://raw.githubusercontent.com/mylesagray/vsphere-with-tanzu
 
 You can look at the `tkc.yaml` manifest file to see exactly what we're requesting from the Supervisor Cluster if you want.
 
-Now, this will take some time, it needs to build out some VMs, spin them up and install the requested packages and set up K8s - so either go grab a coffee, or you can watch the deployment in one of two ways:
+Now, this will take some time, it needs to build out some VMs, spin them up and install the requested packages and set up K8s - so either go grab a coffee, or you can watch the deployment in one of two ways.
+
+*Note:* The deployment should take around 30 minutes
 
 ### Watching the deployment in vCenter
 
@@ -42,7 +64,17 @@ Navigate to your Namespace in the vCenter UI and you should see an object `tkc-1
 
 ### Watching the deployment via `kubectl`
 
-Another way to monitor the deployment is using `kubectl` this will watch all VMs created by vSphere with Tanzu on the underlying vSphere infrastructure in real time:
+The primary way to watch your deployment via `kubectl` is to `describe` the Tanzu Kubernetes Cluster deployment with the following command:
+
+```sh
+kubectl describe tkc
+```
+
+This will give all kinds of status information about the components that make up the TKG cluster.
+
+#### Troubleshooting
+
+Another way to monitor or troubleshoot the deployment is using the `watch` flag (`-w`) against all VMs created by vSphere with Tanzu on the underlying vSphere infrastructure:
 
 ```sh
 $ kubectl get virtualmachine -w
