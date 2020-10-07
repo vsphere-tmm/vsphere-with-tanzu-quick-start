@@ -20,8 +20,8 @@ spec:
     controlPlane:
       class: guaranteed-small
       count: 1
-      storageClass: vsan-default-storage-policy
+      storageClass: kubernetes-demo-storage
     workers:
       class: guaranteed-small
       count: 1
-      storageClass: vsan-default-storage-policy
+      storageClass: kubernetes-demo-storage
