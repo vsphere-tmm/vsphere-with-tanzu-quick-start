@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: vsphere-with-tanzu-pod
+  labels: 
+    app : nginx
 spec:
   volumes:
     - name: my-pod-storage
