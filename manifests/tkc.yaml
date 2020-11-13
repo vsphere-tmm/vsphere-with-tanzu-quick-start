@@ -14,3 +14,7 @@ spec:
       class: guaranteed-small
       count: 1
       storageClass: kubernetes-demo-storage
+  settings:
+    storage:
+      classes: ["kubernetes-demo-storage"]              #Named PVC storage classes
+      defaultClass: kubernetes-demo-storage                     #Default PVC storage class
