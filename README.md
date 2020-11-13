@@ -153,7 +153,7 @@ We are now going to deploy a pod using a Kubernetes manifest - these are written
 
 Let's deploy an application that needs storage and we will update the StorageClass provided with the cluster to be the default to make provisioning easier.
 
-#### Setting the default StorageClass
+#### Viewing a StorageClass
 
 When you set up vSphere with Tanzu, you added storage to your install, this will have been automatically added to your TKG service cluster for you.
 
@@ -166,13 +166,7 @@ NAME                          PROVISIONER              RECLAIMPOLICY   VOLUMEBIN
 vsan-default-storage-policy   csi.vsphere.vmware.com   Delete          Immediate           true                   8d
 ```
 
-Let's make this StorageClass the default to save us some manfiest configuration later on:
-
-```sh
-kubectl patch `kubectl get sc -o name` -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
-
-The above command gets the name of the existing StorageClass on the cluster and updates it with an annotation to make it the default for the cluster.
+If you used the `tkc.yaml` file in the `/manifests` folder here, the default StorageClass is already set for you (by the last three lines).
 
 #### Claim a PersistentVolume
 
