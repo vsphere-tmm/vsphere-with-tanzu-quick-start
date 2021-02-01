@@ -111,6 +111,14 @@ kubectl config use-context tkc-1
 
 We're now up and running with a new TKG K8s cluster and can have som fun deploying workloads to it!
 
+## Create an allow all Pod Security Policy
+
+This shouldn't be done in production, but for a quick start, this will bind all authenticated users to run any type of container:
+
+```sh
+kubectl create clusterrolebinding default-tkg-admin-privileged-binding --clusterrole=psp:vmware-system-privileged --group=system:authenticated
+```
+
 ## Deploy a workload
 
 ### Deploy busybox and get a shell
