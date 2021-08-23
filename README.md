@@ -128,7 +128,7 @@ The simplest possible proof of concept is to run a `busybox` container on the K8
 The following command will run the `busybox` container on your TKG cluster (because that's the context we told `kubectl` to use) and to get a shell inside the container, additionally, once we exit the container, it will be stopped.
 
 ```sh
-kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+kubectl run -i --tty busybox --image=quay.io/quay/busybox --restart=Never -- sh
 ```
 
 #### Test out busybox
