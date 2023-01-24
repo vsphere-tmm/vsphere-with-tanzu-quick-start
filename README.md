@@ -54,6 +54,9 @@ kubectl apply -f https://raw.githubusercontent.com/vsphere-tmm/vsphere-with-tanz
 
 You can look at the `tkc.yaml` manifest file to see exactly what we're requesting from the Supervisor Cluster if you want.
 
+*Note:* You can change the version number to match the distribution version you wish to deploy.
+Run kubectl get tkr to get a list of compatible versions.
+
 Now, this will take some time, it needs to build out some VMs, spin them up and install the requested packages and set up K8s - so either go grab a coffee, or you can watch the deployment in one of two ways.
 
 *Note:* The deployment should take around 30 minutes
