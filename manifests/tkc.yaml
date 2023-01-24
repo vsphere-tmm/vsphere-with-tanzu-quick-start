@@ -4,7 +4,7 @@ metadata:
   name: tkc-1
 spec:
   distribution:
-    version: v1.18
+    version: v1.23
   topology:
     controlPlane:
       class: guaranteed-small
